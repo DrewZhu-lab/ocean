@@ -8,6 +8,7 @@ TagManager:
   - Fish
   - Fire
   - Hand
+  - Environment
   layers:
   - Default
   - TransparentFX

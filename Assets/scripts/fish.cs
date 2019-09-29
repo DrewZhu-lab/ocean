@@ -14,6 +14,7 @@ public class fish : MonoBehaviour
     private float MySpeed = 0.04f;
     public bool filled = false;
     private Vector3 destPos;
+    private Vector3 startPos;
     private float swimDuration = 0;
     private bool inTravel = false;
     private float swimRotation = 0;
@@ -53,8 +54,9 @@ public class fish : MonoBehaviour
             // randomize the fishes’ direction and speed.
             if (Random.value > 0.4f) {
 	            // Random.value gives a float between 0 < value < 1. minus 0.5 from this to give -0.5 < value < 0.5;
+                startPos = transform.position;
                 destPos = new Vector3((float)(Random.value - 0.5f) * 2 * max_X, (float)(Random.value * max_Y), (float)(Random.value - 0.5f) * 2 * max_Z);
-                Vector3 relativePos = destPos - transform.position;
+                Vector3 relativePos = destPos - startPos;
                 transform.rotation = Quaternion.LookRotation(relativePos, Vector3.up);
 
                 float travelSpeed = Random.value + 0.1f;
@@ -91,6 +93,15 @@ public class fish : MonoBehaviour
                 filled = true;
                 ChangeMaterialToMode("Transparent");
             }
+        }
+
+        if (collision.gameObject.tag == "Environment") {
+            destPos = startPos;
+            Vector3 relativePos = destPos - transform.position;
+            transform.rotation = Quaternion.LookRotation(relativePos, Vector3.up);
+            MySpeed = 0.025f;
+            rotationIncrement = 0.28f;
+            swimDuration = 60;
         }
     }
 
