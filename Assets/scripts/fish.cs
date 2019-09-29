@@ -10,7 +10,6 @@ public class fish : MonoBehaviour
     private float max_X = 0;
     private float max_Y = 0;
     private float max_Z = 0;
-    private int dir_Z = 1;
     private float MySpeed = 0.04f;
     public bool filled = false;
     private Vector3 destPos;
@@ -23,9 +22,9 @@ public class fish : MonoBehaviour
 
    void Start() {
         //  Y =4 means 4 units tall  and fish can only swim between 0-4 
-        max_X = Field.transform.localScale.x * 2 / 4;
-        max_Z = Field.transform.localScale.z * 2/ 4;
-        max_Y = 4;
+        max_X = Field.transform.localScale.x / 2;
+        max_Z = Field.transform.localScale.z / 2;
+        max_Y = 10f;
     }
     void Update() {
         //Self.GetComponentInChildren<Animation>().Play("bigfishanimation");
@@ -52,23 +51,27 @@ public class fish : MonoBehaviour
             if (swimDuration <= 0 || transform.position == destPos) inTravel = false;
         } else {
             // randomize the fishes’ direction and speed.
-            if (Random.value > 0.4f) {
-	            // Random.value gives a float between 0 < value < 1. minus 0.5 from this to give -0.5 < value < 0.5;
-                startPos = transform.position;
+	        // Random.value gives a float between 0 < value < 1. minus 0.5 from this to give -0.5 < value < 0.5;
+            startPos = transform.position;
+            destPos = new Vector3((float)(Random.value - 0.5f) * 2 * max_X, (float)(Random.value * max_Y), (float)(Random.value - 0.5f) * 2 * max_Z);
+            int breakloop = 0;
+            while (Mathf.Abs(destPos.x - startPos.x) + Mathf.Abs(destPos.y - startPos.y) + Mathf.Abs(destPos.z - startPos.z) < 25f) {
                 destPos = new Vector3((float)(Random.value - 0.5f) * 2 * max_X, (float)(Random.value * max_Y), (float)(Random.value - 0.5f) * 2 * max_Z);
-                Vector3 relativePos = destPos - startPos;
-                transform.rotation = Quaternion.LookRotation(relativePos, Vector3.up);
-
-                float travelSpeed = Random.value + 0.1f;
-                MySpeed = travelSpeed / 10f;
-                rotationIncrement = travelSpeed * 1.4f;
-
-	            // Random value between 0 < value < 400;
-                swimDuration = Random.value * 400;
-
-                inTravel = true;
-                swimRotation = 0f; // reset the rotation angle every time           
+                breakloop++;
+                if (breakloop > 50) break;
             }
+            Vector3 relativePos = destPos - startPos;
+            transform.rotation = Quaternion.LookRotation(relativePos, Vector3.up);
+
+            float travelSpeed = (Random.value / 4) + 0.25f;
+            MySpeed = travelSpeed / 10f;
+            rotationIncrement = travelSpeed * 1f;
+
+            // Random value between 600 < value < 1000;
+            swimDuration = (Random.value * 400f) + 600f;
+
+            inTravel = true;
+            swimRotation = 0f; // reset the rotation angle every time           
         }
     }
     void OnCollisionEnter(Collision collision)
@@ -99,9 +102,7 @@ public class fish : MonoBehaviour
             destPos = startPos;
             Vector3 relativePos = destPos - transform.position;
             transform.rotation = Quaternion.LookRotation(relativePos, Vector3.up);
-            MySpeed = 0.025f;
-            rotationIncrement = 0.28f;
-            swimDuration = 60;
+            swimDuration = 300f;
         }
     }
 
